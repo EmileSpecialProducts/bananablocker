@@ -1,15 +1,35 @@
+// based on the https://github.com/narzan513/bananablocker
+#include <Arduino.h> //  https://github.com/espressif/arduino-esp32/tree/master/cores/esp32
+#if defined(ESP8266)
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+#else
+#include <WiFi.h>      // https://github.com/espressif/arduino-esp32/tree/master/libraries/WiFi
+#include <esp_wifi.h>
+#include <WebServer.h> // https://github.com/espressif/arduino-esp32/tree/master/libraries/WebServer
+#include <ESPmDNS.h>   // https://github.com/espressif/arduino-esp32/tree/master/libraries/ESPmDNS
+#endif
+
 #include <DNSServer.h>
 #include <WiFiUdp.h>
 #include <EEPROM.h>
+#include <LittleFS.h>
 #include <FS.h>
 
 // Configuration
 #define DNS_PORT 53
 #define WEB_PORT 80
-#define FLASH_BUTTON 0  // GPIO0 (Flash button)
+#if defined(ESP8266) || defined(CONFIG_IDF_TARGET_ESP32) || defined(CONFIG_IDF_TARGET_ESP32S2) || defined(CONFIG_IDF_TARGET_ESP32S3) 
+#define FLASH_BUTTON 0  
+#elif defined(CONFIG_IDF_TARGET_ESP32C2) || defined(CONFIG_IDF_TARGET_ESP32C3) || defined(CONFIG_IDF_TARGET_ESP32C6) || defined(CONFIG_IDF_TARGET_ESP32C61) || defined(CONFIG_IDF_TARGET_ESP32S31)
+#define FLASH_BUTTON 9  
+#elif defined(CONFIG_IDF_TARGET_ESP32C5)
+#define FLASH_BUTTON 28  
+#elif defined(CONFIG_IDF_TARGET_ESP32S31)
+#define FLASH_BUTTON 61  
+#endif
+
 #define EEPROM_SIZE 512
 #define MAX_BLOCKED_DOMAINS 200
 #define DOMAIN_LENGTH 32
@@ -20,7 +40,11 @@ const char* ap_password = "banana123";
 const char* device_name = "BananaBlocker";
 
 // Global objects
+#if defined(ESP8266)
 ESP8266WebServer server(WEB_PORT);
+#else
+WebServer server(WEB_PORT);
+#endif
 DNSServer dnsServer;
 WiFiUDP udpDNS;
 WiFiClient client;
@@ -133,9 +157,13 @@ void setup() {
   // Initialize EEPROM and file system
   Serial.println("Initializing EEPROM...");
   EEPROM.begin(EEPROM_SIZE);
-  Serial.println("Initializing SPIFFS...");
-  bool spiffs_ok = SPIFFS.begin();
-  Serial.printf("SPIFFS initialization: %s\n", spiffs_ok ? "SUCCESS" : "FAILED");
+  Serial.println("Initializing LittleFS...");  
+#if defined(ESP8266)
+  bool LittleFS_ok = LittleFS.begin();
+#else
+  bool LittleFS_ok = LittleFS.begin(true); // FORMAT_LITTLEFS_IF_FAILED
+#endif
+  Serial.printf("LittleFS initialization: %s\n", LittleFS_ok ? "SUCCESS" : "FAILED");
   
   // Load configuration
   Serial.println("Loading configuration...");
@@ -183,22 +211,20 @@ void loop() {
     handleDNSRequests();
   }
   
-  // Check for factory reset button
-  checkFactoryReset();
-  
-  // Handle mDNS
+  checkFactoryReset(); // Check for factory reset button
+  #if defined(ESP8266)
   if (!isAPMode) {
-    MDNS.update();
+    MDNS.update(); // Handle mDNS
   }
-  
+  #endif 
   delay(1);
 }
 
 void loadConfig() {
-  Serial.println("Loading configuration from SPIFFS...");
+  Serial.println("Loading configuration from LittleFS...");
   
   // Try to load from file first
-  File configFile = SPIFFS.open("/config.dat", "r");
+  File configFile = LittleFS.open("/config.dat", "r");
   if (configFile && configFile.size() == sizeof(config)) {
     configFile.readBytes((char*)&config, sizeof(config));
     configFile.close();
@@ -210,7 +236,7 @@ void loadConfig() {
     
     // Check if configuration is valid
     if (config.magic == CONFIG_MAGIC && config.configured == true && strlen(config.wifi_ssid) > 0) {
-      Serial.println("Valid configuration found in SPIFFS!");
+      Serial.println("Valid configuration found in LittleFS!");
       Serial.printf("WiFi SSID: %s\n", config.wifi_ssid);
       Serial.printf("WiFi Password: %s\n", strlen(config.wifi_password) > 0 ? "***SET***" : "***EMPTY***");
       Serial.printf("Admin Password: %s\n", config.admin_password);
@@ -248,24 +274,24 @@ void loadConfig() {
 }
 
 void saveConfig() {
-  Serial.println("Saving configuration to SPIFFS...");
+  Serial.println("Saving configuration to LittleFS...");
   config.magic = CONFIG_MAGIC; // Ensure magic number is set
   
-  File configFile = SPIFFS.open("/config.dat", "w");
+  File configFile = LittleFS.open("/config.dat", "w");
   if (configFile) {
     size_t written = configFile.write((uint8_t*)&config, sizeof(config));
     configFile.close();
     
-    Serial.printf("SPIFFS write result: %s (%d bytes)\n", written == sizeof(config) ? "SUCCESS" : "FAILED", written);
+    Serial.printf("LittleFS write result: %s (%d bytes)\n", written == sizeof(config) ? "SUCCESS" : "FAILED", written);
     
     if (written == sizeof(config)) {
-      Serial.println("Configuration saved to SPIFFS");
+      Serial.println("Configuration saved to LittleFS");
       Serial.printf("Saved Magic: 0x%08X\n", config.magic);
       Serial.printf("Saved SSID: '%s'\n", config.wifi_ssid);
       Serial.printf("Saved Password: '%s'\n", strlen(config.wifi_password) > 0 ? "***SET***" : "***EMPTY***");
       Serial.printf("Configured flag: %s\n", config.configured ? "true" : "false");
     } else {
-      Serial.println("Failed to save configuration to SPIFFS");
+      Serial.println("Failed to save configuration to LittleFS");
     }
   } else {
     Serial.println("Failed to open config file for writing");
@@ -293,7 +319,10 @@ bool connectToWiFi() {
     Serial.print(".");
     attempts++;
   }
-  
+  WiFi.setSleep(false);
+#if not defined(ESP8266)
+  esp_wifi_set_ps(WIFI_PS_NONE); // Esp32 enters the power saving mode by default,
+#endif
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("");
     Serial.println("================================");
@@ -854,8 +883,8 @@ void performFactoryReset() {
   }
   EEPROM.commit();
   
-  // Clear SPIFFS
-  SPIFFS.format();
+  // Clear LittleFS
+  LittleFS.format();
   
   Serial.println("Factory reset complete. Restarting...");
   delay(1000);
