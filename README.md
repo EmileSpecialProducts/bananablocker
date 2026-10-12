@@ -1,12 +1,14 @@
 # 🍌 BananaBlocker
 
+
+
+A Pi-hole-like ad blocker that runs on ESP8266 microcontrollers. Block ads and trackers at the DNS level for your entire network!
+
 Attention: Code Usage Terms
 
 You are free to use this code for personal and educational purposes, and you may fork the project. However, you must credit me by mentioning my name and including a link to the original project whenever you modify or redistribute the code.
 
 This project is intended for educational purposes only. I reserve the right to take legal action against anyone who uses this code to create or publish content without proper authorization.
-
-A Pi-hole-like ad blocker that runs on ESP8266 microcontrollers. Block ads and trackers at the DNS level for your entire network!
 
 ## Features
 
