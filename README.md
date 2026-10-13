@@ -22,7 +22,7 @@ This project is intended for educational purposes only. I reserve the right to t
 
 ## Hardware Requirements
 
-- **ESP8266** (ESP-12E, NodeMCU, Wemos D1 Mini, etc.)
+- **ESP ESP12e, ESP-32 (S2/S3/C2/C3/C5/C6/C61)** 
 - **Power Supply**: 3.3V or USB power
 - **Flash Button**: Built-in flash button for factory reset
 
@@ -30,11 +30,7 @@ This project is intended for educational purposes only. I reserve the right to t
 
 ### 1. Upload the Code
 
-1. Install Arduino IDE with ESP8266 support
-2. Install required libraries (see below)
-3. Open `BananaBlocker.ino`
-4. Select your ESP8266 board
-5. Upload the code
+1. Upload the software using the [web instaler](https://emilespecialproducts.github.io/bananablocker/upload.html)  
 
 ### 2. Initial Setup
 
@@ -51,20 +47,7 @@ This project is intended for educational purposes only. I reserve the right to t
 2. **Login**: Navigate to device IP in browser
 3. **Dashboard**: View statistics and manage block lists
 
-## Required Libraries
-
-Install these libraries via Arduino IDE Library Manager:
-
-```
-ESP8266WiFi (built-in)
-ESP8266WebServer (built-in)
-ESP8266mDNS (built-in)
-DNSServer (built-in)
-EEPROM (built-in)
-FS (built-in)
-```
-
-All required libraries are built into the ESP8266 Arduino Core.
+All required libraries are built into the Arduino Core.
 
 ## Default Configuration
 
@@ -72,7 +55,6 @@ All required libraries are built into the ESP8266 Arduino Core.
 - **AP Password**: `banana123`
 - **Web Port**: `80`
 - **DNS Port**: `53`
-
 
 
 ### Admin Dashboard
@@ -100,7 +82,6 @@ To use BananaBlocker as your DNS server:
 **Option 1: Router Configuration**
 - Set router's primary DNS to BananaBlocker IP
 - All devices will use BananaBlocker automatically
-
 
 
 ## Factory Reset
