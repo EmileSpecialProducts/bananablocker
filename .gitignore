@@ -1,5 +1,4 @@
 
-
 .pioenvs
 .piolibdeps
 .dummy
@@ -10,14 +9,11 @@ sdkconfig.*
 Thumbs.db
 build.txt
 build_upload.txt
-
-
 CMakeLists.txt
 dependencies.lock
-
-build.txt
-build_upload.txt
 env.txt
+BannaBlock/BannaBlock.ino.cpp
+
 
 # Prerequisites
 *.d
