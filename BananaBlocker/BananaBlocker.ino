@@ -34,6 +34,33 @@
 #define MAX_BLOCKED_DOMAINS 200
 #define DOMAIN_LENGTH 32
 
+// Function declarations
+void setupAccessPoint();
+void setupWebServer();
+void handleRoot();
+void handleSetup();
+void handleSetupPost();
+void handleLogin();
+void handleLogout();
+void handleStats();
+void handleToggleBlocking();
+void handleGetBlocklist(); 
+void handleAddDomain();
+void handleRemoveDomain();
+void handleFactoryReset();
+void handleDNSQuery();
+void handleNotFound();
+bool isAuthenticated();
+bool isDomainBlocked(String domain);
+void checkFactoryReset();
+void handleDNSRequests();
+String extractDomainFromDNS(uint8_t* buffer, int len);
+void sendDNSResponse(uint8_t* query, int queryLen, IPAddress clientIP, uint16_t clientPort, IPAddress responseIP);
+void forwardDNSQuery(uint8_t* query, int queryLen, IPAddress clientIP, uint16_t clientPort);
+void performFactoryReset();
+String getSetupPage();
+String getDashboardPage();
+
 // Network Configuration
 const char* ap_ssid = "BananaBlocker";
 const char* ap_password = "banana123";
