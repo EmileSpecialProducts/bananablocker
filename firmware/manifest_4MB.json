@@ -1,0 +1,79 @@
+{
+  "name": "ESP-BananaBlocker",
+  "version": "2026.10.12",
+  "home_assistant_domain": "ESP-BananaBlocker",
+  "funding_url": "https://github.com/EmileSpecialProducts/bananablocker",
+  "builds": 
+  [
+    {
+      "chipFamily": "ESP8266",
+      "parts": [
+        { "path": "./esp12e/firmware.bin", "offset": 0},
+        { "path": "./esp12e/littlefs.bin", "offset": 2097152 }
+      ]
+    },
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        { "path": "./esp32_4MB/firmware.factory.bin", "offset": 4096 },
+        { "path": "./esp32_4MB/littlefs.bin", "offset": 2031616 }
+      ]
+    },
+     {
+      "chipFamily": "ESP32-C2",
+      "parts": [
+        { "path": "./esp32c2_4MB/firmware.factory.bin", "offset": 0 },
+        { "path": "./esp32c2_4MB/littlefs.bin", "offset": 2031616 }
+      ]
+    },
+    {
+      "chipFamily": "ESP32-C3",
+      "parts": [
+        { "path": "./esp32c3_4MB/firmware.factory.bin", "offset": 0 },
+        { "path": "./esp32c3_4MB/littlefs.bin", "offset": 2031616 }
+      ]
+    },
+    {
+      "chipFamily": "ESP32-C5",
+      "parts": [
+        { "path": "./esp32c5_4MB/firmware.factory.bin", "offset": 8192 },
+        { "path": "./esp32c5_4MB/littlefs.bin", "offset": 2031616 }
+      ]
+    },
+    {
+      "chipFamily": "ESP32-C6",
+      "parts": [
+        { "path": "./esp32c6_4MB/firmware.factory.bin", "offset": 0 },
+        { "path": "./esp32c6_4MB/littlefs.bin", "offset": 2031616 }
+      ]
+    },
+    {
+      "chipFamily": "ESP32-C61",
+      "parts": [
+        { "path": "./esp32c61_4MB/firmware.factory.bin", "offset": 0 },
+        { "path": "./esp32c61_4MB/littlefs.bin", "offset": 2031616 }
+      ]
+    },
+    {
+      "chipFamily": "ESP32-S2",
+      "parts": [
+        { "path": "./esp32s2_4MB/firmware.factory.bin", "offset": 4096 },
+        { "path": "./esp32s2_4MB/littlefs.bin", "offset": 2031616 }
+      ]
+    },
+    {
+      "chipFamily": "ESP32-S3",
+      "parts": [
+        { "path": "./esp32s3_4MB/firmware.factory.bin", "offset": 0 },
+        { "path": "./esp32s3_4MB/littlefs.bin", "offset": 2031616 }
+      ]
+    },
+    {
+      "chipFamily": "ESP32-S31",
+      "parts": [
+        { "path": "./esp32s31_4MB/firmware.factory.bin", "offset": 0 },
+        { "path": "./esp32s31_4MB/littlefs.bin", "offset": 2031616 }
+      ]
+    }
+  ]
+}
