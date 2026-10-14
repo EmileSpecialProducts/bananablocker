@@ -2,7 +2,7 @@
 
 
 
-A Pi-hole-like ad blocker that runs on ESP8266 microcontrollers. Block ads and trackers at the DNS level for your entire network!
+A Pi-hole-like ad blocker that runs on 4MB ESP12e, ESP-32 (S2/S3/S31/C2/C3/C5/C6/C61) microcontrollers. Block ads and trackers at the DNS level for your entire network!
 
 Attention: Code Usage Terms
 
@@ -22,7 +22,7 @@ This project is intended for educational purposes only. I reserve the right to t
 
 ## Hardware Requirements
 
-- **ESP ESP12e, ESP-32 (S2/S3/C2/C3/C5/C6/C61)** 
+- **ESP ESP12e, ESP-32 (S2/S3/S31/C2/C3/C5/C6/C61)** 
 - **Power Supply**: 3.3V or USB power
 - **Flash Button**: Built-in flash button for factory reset
 
@@ -31,6 +31,9 @@ This project is intended for educational purposes only. I reserve the right to t
 ### 1. Upload the Code
 
 1. Upload the software using the [web instaler](https://emilespecialproducts.github.io/bananablocker/upload.html)  
+
+For the ESP32-C61 and ESP32-S31 the web instaler will not yet work.
+Then you will need pioarduino to build and upload the software.
 
 ### 2. Initial Setup
 
@@ -193,7 +196,16 @@ const char* default_blocked_domains[] = {
 **Modify UI Colors:**
 Edit the CSS in the HTML page functions.
 
-### Building from Source
+### Building from Source in Visual Studio Code / pioarduino IDE
+
+1. Download Visual Studio Code and add the pioarduino extension  
+2. Clone or download the project
+2. run `code .` in the folder that has the `platformio.ini` file 
+3. Wait untill all is loaded this can take some time
+4. Select the device 
+5. Upload to device
+
+### Building from Source in Arduino IDE
 
 1. Clone or download the project
 2. Open `BananaBlocker.ino` in Arduino IDE
