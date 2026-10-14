@@ -20,13 +20,21 @@
 // Configuration
 #define DNS_PORT 53
 #define WEB_PORT 80
+
 #if defined(ESP8266) || defined(CONFIG_IDF_TARGET_ESP32) || defined(CONFIG_IDF_TARGET_ESP32S2) || defined(CONFIG_IDF_TARGET_ESP32S3) 
+#undef FLASH_BUTTON
 #define FLASH_BUTTON 0  
-#elif defined(CONFIG_IDF_TARGET_ESP32C2) || defined(CONFIG_IDF_TARGET_ESP32C3) || defined(CONFIG_IDF_TARGET_ESP32C6) || defined(CONFIG_IDF_TARGET_ESP32C61) || defined(CONFIG_IDF_TARGET_ESP32S31)
+#endif
+#if defined(CONFIG_IDF_TARGET_ESP32C2) || defined(CONFIG_IDF_TARGET_ESP32C3) || defined(CONFIG_IDF_TARGET_ESP32C6) || defined(CONFIG_IDF_TARGET_ESP32C61) 
+#undef FLASH_BUTTON
 #define FLASH_BUTTON 9  
-#elif defined(CONFIG_IDF_TARGET_ESP32C5)
+#endif
+#if defined(CONFIG_IDF_TARGET_ESP32C5)
+#undef FLASH_BUTTON
 #define FLASH_BUTTON 28  
-#elif defined(CONFIG_IDF_TARGET_ESP32S31)
+#endif
+#if defined(CONFIG_IDF_TARGET_ESP32S31)
+#undef FLASH_BUTTON
 #define FLASH_BUTTON 61  
 #endif
 
@@ -60,6 +68,12 @@ void forwardDNSQuery(uint8_t* query, int queryLen, IPAddress clientIP, uint16_t 
 void performFactoryReset();
 String getSetupPage();
 String getDashboardPage();
+void saveConfig();
+void loadConfig();
+bool connectToWiFi();
+void setupServices();
+String getLoginPage();
+
 
 // Network Configuration
 const char* ap_ssid = "BananaBlocker";
