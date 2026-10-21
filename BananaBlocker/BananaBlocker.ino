@@ -10,7 +10,9 @@
 #include <WebServer.h> // https://github.com/espressif/arduino-esp32/tree/master/libraries/WebServer
 #include <ESPmDNS.h>   // https://github.com/espressif/arduino-esp32/tree/master/libraries/ESPmDNS
 #endif
-
+#ifdef OTA_UPDATE
+#include <ArduinoOTA.h>
+#endif
 #include <DNSServer.h>
 #include <WiFiUdp.h>
 #include <EEPROM.h>
@@ -205,7 +207,7 @@ void setup() {
   bool LittleFS_ok = LittleFS.begin(true); // FORMAT_LITTLEFS_IF_FAILED
 #endif
   Serial.printf("LittleFS initialization: %s\n", LittleFS_ok ? "SUCCESS" : "FAILED");
-  
+
   // Load configuration
   Serial.println("Loading configuration...");
   loadConfig();
@@ -230,6 +232,32 @@ void setup() {
       setupServices();
       Serial.printf("Final WiFi mode: %d (1=STA, 2=AP, 3=STA+AP)\n", WiFi.getMode());
     }
+    #ifdef OTA_UPDATE
+    if (WiFi.status() == WL_CONNECTED)
+    {
+      // Arduino OTA Update
+      ArduinoOTA.onStart([]()
+                          { Serial.println("OTA Update Start"); });
+      ArduinoOTA.onEnd([]()
+                        { Serial.println("OTA Update End"); });
+      ArduinoOTA.onProgress([](unsigned int progress, unsigned int total)
+                            {
+          Serial.printf("OTA Progress: %02u%%\n", (progress/(total/100)));
+          });
+      ArduinoOTA.onError([](ota_error_t error)
+              {
+              if (error == OTA_AUTH_ERROR) Serial.println("OTA Auth Failed");
+              else if (error == OTA_BEGIN_ERROR) Serial.println("OTA Begin Failed");
+              else if (error == OTA_CONNECT_ERROR) Serial.println("OTAConnect Failed");
+              else if (error == OTA_RECEIVE_ERROR) Serial.println("OTARecieve Failed");
+              else if (error == OTA_END_ERROR) Serial.println("OTA End Failed"); 
+              }
+      );
+      ArduinoOTA.setHostname(device_name);
+      ArduinoOTA.setPassword("Banana");
+      ArduinoOTA.begin();
+    }
+#endif
   }
   
   Serial.println("Setting up web server...");
@@ -253,11 +281,12 @@ void loop() {
   }
   
   checkFactoryReset(); // Check for factory reset button
-  #if defined(ESP8266)
-  if (!isAPMode) {
-    MDNS.update(); // Handle mDNS
-  }
-  #endif 
+#if defined(ESP8266)
+  if (!isAPMode) MDNS.update(); // Handle mDNS  
+#endif 
+#ifdef OTA_UPDATE
+  if (WiFi.status() == WL_CONNECTED) ArduinoOTA.handle(); // Handle OTA updates
+#endif
   delay(1);
 }
 
