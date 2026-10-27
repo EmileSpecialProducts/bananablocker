@@ -679,7 +679,7 @@ void handleAddDomain() {
   String domain = server.arg("domain");
   domain.toLowerCase();
   
-  if (domain.length() == 0) {
+  if (domain.length() == 0 || config.blocked_domains_count >= MAX_BLOCKED_DOMAINS) {
     server.send(400, "application/json", "{\"error\": \"Domain required\"}");
     return;
   }
