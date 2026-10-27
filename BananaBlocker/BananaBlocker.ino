@@ -115,6 +115,7 @@ bool factoryResetTriggered = false;
 
 // Simple session management
 bool isLoggedIn = false;
+IPAddress remoteIP=IPAddress(0, 0, 0, 0); // Store the IP address of the logged-in client
 unsigned long sessionExpiry = 0;
 
 // Default blocked domains - comprehensive ad server blocklist (200 domains)
@@ -599,6 +600,7 @@ void handleLogin() {
   if (password == config.admin_password) {
     // Set global login state and session expiry (24 hours)
     isLoggedIn = true;
+    remoteIP = server.client().remoteIP(); // Log the remote IP for Authentication
     sessionExpiry = millis() + (24UL * 60UL * 60UL * 1000UL); // 24 hours in milliseconds
     
     Serial.printf("Login successful from IP: %s\n", server.client().remoteIP().toString().c_str());
@@ -772,7 +774,7 @@ bool isAuthenticated() {
   Serial.printf("Session expires in: %lu ms\n", sessionExpiry > currentTime ? sessionExpiry - currentTime : 0);
   
   // Check if logged in and session hasn't expired
-  bool authenticated = isLoggedIn && (currentTime < sessionExpiry);
+  bool authenticated = isLoggedIn && (currentTime < sessionExpiry) && (server.client().remoteIP() == remoteIP);
   
   Serial.printf("Authentication result: %s\n", authenticated ? "AUTHENTICATED" : "NOT_AUTHENTICATED");
   return authenticated;
