@@ -41,7 +41,7 @@
 #endif
 
 #define EEPROM_SIZE 512
-#define MAX_BLOCKED_DOMAINS 200
+#define MAX_BLOCKED_DOMAINS 400
 #define DOMAIN_LENGTH 32
 
 // Function declarations
@@ -106,7 +106,7 @@ struct Config {
   char blocked_domains[MAX_BLOCKED_DOMAINS][DOMAIN_LENGTH];
 };
 
-#define CONFIG_MAGIC 0xBABE2024
+#define CONFIG_MAGIC 0xBABE2026
 
 Config config;
 bool isAPMode = false;
