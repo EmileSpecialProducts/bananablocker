@@ -976,11 +976,18 @@ String getSetupPage() {
         .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         h1 { color: #B8860B; text-align: center; margin-bottom: 30px; }
         .logo { text-align: center; font-size: 3em; margin-bottom: 10px; color: #B8860B; font-weight: bold; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        ::-ms-reveal {
+            display: none;
+        }
+        .password-input
+        {
+          input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        }
         button { width: 100%; padding: 12px; background: #FFE135; color: #333; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; }
         button:hover { background: #F5D920; }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
+
     </style>
 </head>
 <body>
@@ -991,25 +998,48 @@ String getSetupPage() {
         
         <form method="post" action="/setup">
             <div class="form-group">
+                <div class="password-input">
                 <label>WiFi Network Name (SSID):</label>
                 <input type="text" name="ssid" id="ssid" placeholder="Enter your WiFi network name" required>
+                </div>
             </div>
             
             <div class="form-group">
                 <label>WiFi Password:</label>
-                <input type="password" name="password" id="password">
+                <div class="password-input">
+                    <input type="password" name="password" id="password">
+                </div>
+                <div onclick="ShowPassword('password_checkbox','password')">
+                    <input id="password_checkbox" type="checkbox" >Show Password
+                </div>
             </div>
             
             <div class="form-group">
                 <label>Admin Password (required):</label>
-                <input type="password" name="admin_password" placeholder="Create a secure admin password" required>
+                <div class="password-input">
+                    <input type="password" name="admin_password" id="admin_password" placeholder="Create a secure admin password" required>
+                </div>
+                <div onclick="ShowPassword('admin_password_checkbox','admin_password')">
+                    <input type="checkbox" id="admin_password_checkbox">Show Password
+                </div>
             </div>
             
             <button type="submit">Connect to Network</button>
         </form>
     </div>
-    
-
+    <script>
+        function ShowPassword(checkname,passwordname) {
+          var x = document.getElementById(passwordname);
+          var c = document.getElementById(checkname);
+          if (x.type === "password") {
+            x.type = "text";
+            c.checked = true;
+          } else {
+            x.type = "password";
+            c.checked = false;
+          }
+        }
+    </script>
 </body>
 </html>
 )rawliteral";
@@ -1037,27 +1067,19 @@ String getLoginPage() {
 </head>
 <body>
     <div class="login-container">
-        <h1>BananaBlocker</h1>
-        
-
-        
+        <h1>BananaBlocker</h1>  
         <form onsubmit="login(event)">
             <input type="password" id="password" placeholder="Admin Password" required>
             <button type="submit">Login</button>
         </form>
         <div id="error" class="error"></div>
     </div>
-    
     <script>
-
-        
         function login(event) {
-            event.preventDefault();
-            
+            event.preventDefault();  
             var password = document.getElementById('password').value;
             var formData = new FormData();
             formData.append('password', password);
-            
             fetch('/login', {
                 method: 'POST',
                 body: formData
