@@ -790,7 +790,7 @@ bool isDomainBlocked(String domain) {
   
   for (int i = 0; i < config.blocked_domains_count; i++) {
     if (domain.indexOf(config.blocked_domains[i]) != -1) {
-      Serial.printf("Blocked: %s (matches %s)\n", domain.c_str(), config.blocked_domains[i]);
+      //Serial.printf("Blocked: %s (matches %s)\n", domain.c_str(), config.blocked_domains[i]);
       return true;
     }
   }
@@ -830,18 +830,20 @@ void handleDNSRequests() {
   String domain = extractDomainFromDNS(buffer, len);
   
   if (domain.length() > 0) {
-    Serial.printf("DNS Query: %s from %s\n", domain.c_str(), clientIP.toString().c_str());
-    
+    bool blocked = false;
     if (isDomainBlocked(domain)) {
       // Block the domain by returning our own IP (redirect to block page)
       sendDNSResponse(buffer, len, clientIP, clientPort, WiFi.localIP());
       config.blocked_count++;
-      Serial.printf("BLOCKED: %s\n", domain.c_str());
+      blocked = true;
     } else {
       // Forward to upstream DNS (Google DNS)
       forwardDNSQuery(buffer, len, clientIP, clientPort);
       config.allowed_count++;
     }
+    Serial.printf("DNS Query: %s from %s", domain.c_str(), clientIP.toString().c_str());
+    if(blocked) Serial.printf(": BLOCKED");
+    Serial.printf("\n");
   }
 }
 
